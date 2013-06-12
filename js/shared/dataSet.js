@@ -50,6 +50,7 @@ if (!UW) var UW={};
           this.setAllRecords({'visible' : true});
         }
       }
+
 			this.initalized = true;
     },
     
