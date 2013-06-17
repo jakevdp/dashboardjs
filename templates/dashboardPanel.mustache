@@ -348,5 +348,14 @@
     $('#popUpMask').toggle();     
     $('#' + popUpId).toggle(); 
   }
+
+  // Listen to external events and notify gadgets
+  window.addEventListener("message", receiveMessage, false);
+  function receiveMessage(event)
+  {
+    ASCOT.dashboard.notify("externalMessage", {"origin":event.origin,
+                                               "data":event.data});
+    console.log("received message");
+  }
   </script>
 </html>

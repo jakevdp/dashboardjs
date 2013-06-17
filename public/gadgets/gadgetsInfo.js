@@ -68,6 +68,13 @@ var gadgets = {
     description: "Display DataSets as a table with movable and sortable columns.",
     author: "Ian Smith - imsmith@uw.edu",
     version: "0.1"
+  },
+  notebookInterface: {
+    name: "Notebook Interface",
+    fileName: "notebookInterface.html",
+    description: "Javascript Interface to external client-side processes such as the IPython notebook.",
+    author: "Jake Vanderplas - jakevdp@cs.washington.edu",
+    version: "0.1"
   }
   /*
   fitsViewer_PDR: { 

@@ -1,0 +1,52 @@
+<!-- Author: Jake Vanderplas (jakevdp@cs.washington.edu) -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Pragma" content="no-cache">
+<title>Notebook Interface</title>
+
+<!-- ASCOT Basic Style Sheets -->
+<link href="/css/reset.css" rel="stylesheet" type="text/css">
+<link href="/css/text.css" rel="stylesheet" type="text/css"> 
+<link href="/css/widgets.css" rel="stylesheet" type="text/css"> 
+</head>
+<body>
+<div id="content" class="extraPadding">
+<button onclick="send_message()">Send Message:</button>
+<input type="text" id="messageBox">
+<br><br>
+Messages Received:<br>
+<input type="text" id="domain_name">
+<input type="text" id="message_name">
+</body>
+</div>
+</body>
+<script type="text/Javascript">
+function send_message(){
+  var message = document.getElementById("messageBox").value;
+  var windowRef = parent.parent;  // notebook window in which ascot is embedded
+  windowRef.postMessage(message, "*");
+}
+
+// create HR object
+gadget.init = function(finishedLoading){
+  console.log("initing notebook interface");
+  gadget.onNotification('externalMessage', receiveExternalMessage);
+  finishedLoading();
+};
+
+gadget.saveState = function(){
+  console.log("nbinterface save state");
+};
+
+gadget.loadState = function(state){
+  console.log("nbinterface load state");
+};
+
+function receiveExternalMessage(message){
+  document.getElementById("domain_name").value = message.origin;
+  document.getElementById("message_name").value = message.data;
+}
+</script>
+</html>
