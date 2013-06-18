@@ -2,3 +2,4 @@
 ./static/images/FITSConverter/extractFitsFrame
 *.o
 *~
+*.pyc
