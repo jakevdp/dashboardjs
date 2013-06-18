@@ -9,11 +9,16 @@
 <!-- ASCOT Basic Style Sheets -->
 <link href="/css/reset.css" rel="stylesheet" type="text/css">
 <link href="/css/text.css" rel="stylesheet" type="text/css"> 
-<link href="/css/widgets.css" rel="stylesheet" type="text/css"> 
+<link href="/css/widgets.css" rel="stylesheet" type="text/css">
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.js"></script>
+<script src="/util.js" type="text/javascript"></script>
 </head>
 <body>
 <div id="content" class="extraPadding">
-<button onclick="send_message()">Send Message:</button>
+Dataset: <select id="selectDatasetName" onchange="dataSetSelectChange(true"></select>
+<button onclick="sendData()">Send Data</button><br>
+<button onclick="sendMessage()">Send Message:</button>
 <input type="text" id="messageBox">
 <br><br>
 Messages Received:<br>
@@ -23,7 +28,12 @@ Messages Received:<br>
 </div>
 </body>
 <script type="text/Javascript">
-function send_message(){
+
+// State variables
+var selectedDataSetName = "";
+var selectedDataSet;
+
+function sendMessage(){
   var message = document.getElementById("messageBox").value;
   var windowRef = parent.parent;  // notebook window in which ascot is embedded
   windowRef.postMessage(message, "*");
@@ -33,6 +43,7 @@ function send_message(){
 gadget.init = function(finishedLoading){
   console.log("initing notebook interface");
   gadget.onNotification('externalMessage', receiveExternalMessage);
+  gadget.onNotification('dataSetChanged', gadget.update);
   finishedLoading();
 };
 
@@ -42,11 +53,65 @@ gadget.saveState = function(){
 
 gadget.loadState = function(state){
   console.log("nbinterface load state");
+  if(state){
+    selectedDataSetName = state.selectedDataSetName || selectedDataSetName || "";
+  }
+  redraw();
 };
+
+function redraw(){
+  var dataSetsList = gadget.dashboard.getDataSetList();
+
+  if (dataSetsList.length > 0) {
+    populateSelects();
+  }
+}
+
+function populateSelects() {
+  var columnNames = [];
+
+  // Removing callbacks
+  $('#selectDatasetName').unbind('change');
+  selectedDataSetName = populateSelect('selectDatasetName', gadget.dashboard.getDataSetList(), selectedDataSetName);
+  selectedDataSet = gadget.dashboard.getDataSet(selectedDataSetName.val());
+  selectedDataSetName = selectedDataSetName.text();
+
+  // add colors to the select box (pass the select Name and color array)
+  $('#selectDatasetName').bind('change', function(){
+    if(this.selectedIndex != -1){
+      selectedDataSetName = $(this).find('option:selected').text();
+      gadget.setState({ 
+        'selectedDataSetName' : selectedDataSetName
+      });
+    }    
+  });
+};
+
+function sendData(){
+  console.log("sending data");
+  var windowRef = parent.parent;  // notebook window in which ascot is embedded
+  windowRef.postMessage(selectedDataSet.records, "*");
+};
+
+gadget.update = gadget.loadState;
 
 function receiveExternalMessage(message){
   document.getElementById("domain_name").value = message.origin;
   document.getElementById("message_name").value = message.data;
 }
+
+
+ 
+var dataSetSelectChange = function(click) {
+	currentDataset = $("#selectDatasetName").val();
+	var selectedIndex = $("#selectDatasetName").attr("selectedIndex");
+	
+	if (selectedIndex == -1)
+		return;
+	
+	var selectedDataSetId = parseInt(selectedIndex);
+	var columnNames = [""];
+}
+
 </script>
 </html>
